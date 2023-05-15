@@ -1,3 +1,9 @@
+################################################
+# Code written by Heidi Klem while at 
+# Colorado State University as a graduate student
+# in the Paton and McCullagh groups. 
+#################################################
+
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem

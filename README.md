@@ -6,6 +6,7 @@ A toolkit for enzyme active site modeling (ASM).
 ### Current Functionality
 - Creates a reduced active site model from a protein PDB code or file, suitable for truncated model generate, such as the quantum chemical cluster approach.
 - Couples with AQME (https://github.com/jvalegre/aqme) to automate QM input file generation, QM output parsing and error checking.
+- Scripy generation to visualize model generation in PyMOL.
 
 ### Ongoing Improvements
 This code is in an early stage, and there are many improvements I hope to make. I am also open to suggestions via Pull Requests if there is anything you think would be beneficial to include.

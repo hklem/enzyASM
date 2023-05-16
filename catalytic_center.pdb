@@ -1,0 +1,18 @@
+COMPND    IMIDAZOLE GLYCEROL PHOSPHATE SYNTHASE SUBUNIT HISF
+HETATM    1  N   GLN B1205      33.000  39.520   3.387  1.00 28.14           N  
+HETATM    2  CA  GLN B1205      33.859  39.909   4.530  1.00 28.17           C  
+HETATM    3  C   GLN B1205      35.249  40.392   4.092  1.00 29.22           C  
+HETATM    4  O   GLN B1205      35.733  40.085   2.985  1.00 29.20           O  
+HETATM    5  CB  GLN B1205      33.948  38.782   5.576  1.00 27.72           C  
+HETATM    6  CG  GLN B1205      34.908  37.597   5.304  1.00 27.43           C  
+HETATM    7  CD  GLN B1205      34.710  36.894   3.966  1.00 30.32           C  
+HETATM    8  OE1 GLN B1205      33.581  36.605   3.530  1.00 27.81           O  
+HETATM    9  NE2 GLN B1205      35.832  36.606   3.295  1.00 31.53           N  
+HETATM   10  OXT GLN B1205      35.902  41.120   4.872  1.00 30.00           O  
+CONECT    1    2
+CONECT    2    3    5
+CONECT    3    4   10
+CONECT    5    6
+CONECT    6    7
+CONECT    7    8    9
+END

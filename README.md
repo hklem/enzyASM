@@ -2,6 +2,7 @@
 ---------------------
 
 A toolkit for enzyme active site modeling (ASM).
+See requirements.txt for dependencies and suggested packages
 
 ### Current Functionality
 - Creates a reduced active site model from a protein PDB code or file, suitable for truncated model generate, such as the quantum chemical cluster approach.

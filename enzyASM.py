@@ -16,7 +16,7 @@ protein_residues =  ["ALA", "ARG", "ASH", "ASN", "ASP", "CYM",
  "SER", "THR", "TRP", "TYR", "VAL"]
 
 def res_info(atom,info):
-    ''' Options for info are 'name', 'atom_name', 'number' or 'chain'.
+    ''' Options for info are 'res_name', 'atom_name', 'res_number' or 'chain'.
     '''
     if info == 'res_name':
         return atom.GetPDBResidueInfo().GetResidueName()
@@ -278,7 +278,11 @@ def residue_shell(center_mol,radius,pdb_file=None,base_mol=None,centroid=False,i
         Chem.MolToPDBFile(new_mol,'active_site_radius_{}.pdb'.format(radius))
  
     return new_mol, res_dict
+########################################################## 
+########################################################## 
 
+########################################################## 
+########################################################## 
 def truncate_new(base_mol, scheme='CA_terminal', skip_residues=['HOH','WAT'], skip_resnumbers=[], remove_resnumbers=[], remove_atoms=[], remove_atom_ids=[], remove_sidechains=[], constrain_atoms=[' CA '],radius=None):
     
     new_mol = Chem.RWMol(base_mol)
@@ -292,7 +296,9 @@ def truncate_new(base_mol, scheme='CA_terminal', skip_residues=['HOH','WAT'], sk
     previous_res = None
     remove_ids = []
     fix_bonds = []
-    
+
+########################################################## 
+# Record information about main chain atom bonds
     for atom in reversed(base_mol.GetAtoms()):
         current_res = (res_info(atom,'chain'),res_info(atom,'res_name'),res_info(atom,'res_number'))
         if res_info(atom,'atom_name') in remove_atoms:
@@ -324,80 +330,67 @@ def truncate_new(base_mol, scheme='CA_terminal', skip_residues=['HOH','WAT'], sk
                 C_bonds_atoms = [x for x in C_atom.GetNeighbors()]
                 N_bonds = [res_info(x,'atom_name') for x in N_atom.GetNeighbors()]
                 N_bonds_atoms = [x for x in N_atom.GetNeighbors()]
-                
+########################################################## 
+# Get atom IDs that will be removed according to the 
+# CA_all capping scheme                
                 if scheme == 'CA_all':
-                    if res_info(atom,'res_name') == 'PRO':
-                        N_terminus.append('Keep')
-                        C_terminus.append('Remove')
-                        proline_count += 1
-                        remove_ids.append(O_id)
-                        remove_ids.append(C_id)
-                    else:
-                        N_terminus.append('Remove')
-                        C_terminus.append('Remove')
-                        remove_ids.append(O_id)
-                        for a in range(len(N_bonds)):
-                            if res_info(N_bonds_atoms[a],'atom_name') == ' H  ':
-                                remove_ids.append(N_bonds_atoms[a].GetIdx())
-                        cap_atom = new_mol.GetAtomWithIdx(C_id)
-                        cap_atom.SetAtomicNum(1)
-                        cap_atom.GetPDBResidueInfo().SetName(' H  ')
-                        cap_atom = new_mol.GetAtomWithIdx(N_id)
-                        cap_atom.SetAtomicNum(1)
-                        cap_atom.GetPDBResidueInfo().SetName(' H  ')
-                    bb_atom_count = 0
-                    previous_res = current_res 
-                    
+                    print('Ooops, this truncation scheme is currently under development.')
+#                    if res_info(atom,'res_name') == 'PRO':
+#                        N_terminus.append('Keep')
+#                        C_terminus.append('Remove')
+#                        proline_count += 1
+#                        remove_ids.append(O_id)
+#                        remove_ids.append(C_id)
+#                    else:
+#                        N_terminus.append('Remove')
+#                        C_terminus.append('Remove')
+#                        remove_ids.append(O_id)
+#                        for a in range(len(N_bonds)):
+#                            if res_info(N_bonds_atoms[a],'atom_name') == ' H  ':
+#                                remove_ids.append(N_bonds_atoms[a].GetIdx())
+#                        cap_atom = new_mol.GetAtomWithIdx(C_id)
+#                        cap_atom.SetAtomicNum(1)
+#                        cap_atom.GetPDBResidueInfo().SetName(' H  ')
+#                        cap_atom = new_mol.GetAtomWithIdx(N_id)
+#                        cap_atom.SetAtomicNum(1)
+#                        cap_atom.GetPDBResidueInfo().SetName(' H  ')
+#                    bb_atom_count = 0
+#                    previous_res = current_res 
+########################################################## 
+# Get atom IDs that will be removed according to the 
+# CA_terminal capping scheme
                 if scheme == 'CA_terminal':   
-
                     if res_info(atom,'res_name') == 'PRO':
                         N_terminus.append('Keep')
                         proline_count += 1 
                     if res_info(atom,'res_name') != 'PRO': 
-                        if ' H  ' in N_bonds:
-                            if len(N_bonds) > 2:
-                                N_terminus.append('Keep')
-                            else:
-                                N_terminus.append('Remove')
-                                cap_atom = new_mol.GetAtomWithIdx(N_id)
-                                cap_atom.SetAtomicNum(1)
-                                cap_atom.GetPDBResidueInfo().SetName(' H  ')
-                                fix_bonds.append(cap_atom.GetIdx())
-                                for a in range(len(N_bonds)):
-                                    if res_info(N_bonds_atoms[a],'atom_name') == ' H  ':
-                                        remove_ids.append(N_bonds_atoms[a].GetIdx())
-                                    #if res_info(N_bonds_atoms[a],'atom_name') == ' CA ':
-                                        #AllChem.SetBondLength(new_mol.GetConformer(),N_bonds_atoms[a].GetIdx(),N_id,1.5)
-    
-                        if ' H  ' not in N_bonds:
-                            if len(N_bonds) > 1:
-                                N_terminus.append('Keep')
-                            else:
-                                N_terminus.append('Remove')
-                                cap_atom = new_mol.GetAtomWithIdx(N_id)
-                                cap_atom.SetAtomicNum(1)
-                                cap_atom.GetPDBResidueInfo().SetName(' H  ')
-                                fix_bonds.append(cap_atom.GetIdx())
-                                #AllChem.SetBondLength(new_mol.GetConformer(),N_bonds_atoms[0].GetIdx(),N_id,1.5)
-                    
-                    if len(C_bonds) > 2:
+                        if ' C  ' in N_bonds:
+                            N_terminus.append('Keep')
+                        else:
+                            N_terminus.append('Remove')
+                            cap_atom = new_mol.GetAtomWithIdx(N_id)
+                            cap_atom.SetAtomicNum(1)
+                            cap_atom.GetPDBResidueInfo().SetName(' H  ')
+                            fix_bonds.append(cap_atom.GetIdx())
+                            for a in range(len(N_bonds)):
+                                if res_info(N_bonds_atoms[a],'atom_name') == ' H  ':
+                                    remove_ids.append(N_bonds_atoms[a].GetIdx())  
+                    if ' N  ' in C_bonds:
                         C_terminus.append('Keep')
-                    if len(C_bonds) <= 2: 
+                    else: 
                         C_terminus.append('Remove')
                         remove_ids.append(O_id)
                         cap_atom = new_mol.GetAtomWithIdx(C_id)
                         cap_atom.SetAtomicNum(1)
                         cap_atom.GetPDBResidueInfo().SetName(' H  ')
                         fix_bonds.append(cap_atom.GetIdx())
-                        #for a in range(len(C_bonds)):
-                            #if res_info(C_bonds_atoms[a],'atom_name') == ' CA ':
-                                #AllChem.SetBondLength(new_mol.GetConformer(),C_bonds_atoms[a].GetIdx(),C_id,1.5)
-
-                        
-                        
+                        for a in range(len(C_bonds)):
+                            if res_info(C_bonds_atoms[a],'atom_name') == ' H  ':
+                                remove_ids.append(C_bonds_atoms[a].GetIdx())                                      
                     bb_atom_count = 0
                     previous_res = current_res
-##########################################################                    
+##########################################################  
+# Remove sidechains specified when the function was called
     for atom in reversed(base_mol.GetAtoms()):
         current_res = (res_info(atom,'chain'),res_info(atom,'res_name'),res_info(atom,'res_number'))
         if current_res[-1] not in remove_sidechains:
@@ -416,16 +409,8 @@ def truncate_new(base_mol, scheme='CA_terminal', skip_residues=['HOH','WAT'], sk
                 cap_atom.GetPDBResidueInfo().SetName(' H  ')
                 continue
             remove_ids.append(atom.GetIdx())  
-       
-        #remove_ids.append(atom.GetIdx())
-
 ########################################################## 
-
-    #for bond in base_mol.GetBonds():
-        #if bond.GetBeginAtomIdx() in fix_bonds:
-            #if res_info(base_mol.GetAtomWithIdx(bond.GetEndAtomIdx()),'atom_name') == ' CA ':
-                #AllChem.SetBondLength(new_mol.GetConformer(), bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),1.08)
-    
+# Now actually create the truncated and capped mol object
     for atom in reversed(new_mol.GetAtoms()):
         if res_info(atom,'atom_name') == ' CA ':
             lone_methyl = True
@@ -438,12 +423,11 @@ def truncate_new(base_mol, scheme='CA_terminal', skip_residues=['HOH','WAT'], sk
                 remove_ids.append(atom.GetIdx())
                 for a in bound_atoms:
                     remove_ids.append(a)
-
-    
     remove_ids.sort(reverse=True)
     for a in remove_ids:
         new_mol.RemoveAtom(a)
-                    
+########################################################## 
+# Record CA ids to add to contrain list 
     for atom in new_mol.GetAtoms():
         if res_info(atom,'atom_name') in constrain_atoms:
             constrain_list.append(atom.GetIdx()+1)
@@ -454,8 +438,10 @@ def truncate_new(base_mol, scheme='CA_terminal', skip_residues=['HOH','WAT'], sk
         
     if proline_count > 0:
         print('WARNING: active site model contains {} proline(s). N atom was kept.'.format(proline_count))
+##########################################################     
     return new_mol, constrain_list
-
+########################################################## 
+########################################################## 
 
 def obabel_protonate(active_site_pdb_file):
 
@@ -503,3 +489,4 @@ def show_mol(base_mol):
     drawer.DrawMolecule(mol)
     drawer.FinishDrawing()
     return SVG(drawer.GetDrawingText())
+   

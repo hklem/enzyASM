@@ -1,0 +1,21 @@
+Dependencies
+------------
+RDKit: 
+pip install rdkit
+https://pypi.org/project/rdkit/
+
+openbabel:
+pip install openbabel
+https://pypi.org/project/openbabel/
+
+Recommended packages (used in example)
+------------
+aqme:
+pip install aqme
+https://pypi.org/project/aqme/
+
+pandas:
+pip install pandas
+https://pypi.org/project/pandas/
+
+

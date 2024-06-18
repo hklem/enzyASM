@@ -1,6 +1,11 @@
 # enzyASM
 ---------------------
 
+> [!WARNING]
+What started as enzyASM has now evolved into a more functional Python package called [QMzyme](https://qmzyme.readthedocs.io/). enzyASM is not currently supported and interested users are encouraged to use QMzyme.
+
+---
+
 A toolkit for enzyme active site modeling (ASM).
 See requirements.txt for dependencies and suggested packages
 
